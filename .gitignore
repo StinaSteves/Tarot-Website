@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Server credentials (never expose via VITE_ variables)
+.env
+.env.*
+!.env.example

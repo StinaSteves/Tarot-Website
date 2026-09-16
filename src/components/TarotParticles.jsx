@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { TAROT_SHAPE_HEIGHT, TAROT_SHAPE_PATH, TAROT_SHAPE_WIDTH } from './tarotShape.js'
 
-function TarotParticles() {
+function TarotParticles({ clipToTarot = true, className = 'tarot-particles' }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -92,9 +92,9 @@ function TarotParticles() {
       canvas.width = Math.round(width * pixelRatio)
       canvas.height = Math.round(height * pixelRatio)
 
-      const curveHeight = curve.getBoundingClientRect().height
+      const curveHeight = clipToTarot && curve ? curve.getBoundingClientRect().height : 0
       mask = new Path2D()
-      mask.addPath(shape, new DOMMatrix().scale(width / TAROT_SHAPE_WIDTH, curveHeight / TAROT_SHAPE_HEIGHT))
+      if (curveHeight > 0) mask.addPath(shape, new DOMMatrix().scale(width / TAROT_SHAPE_WIDTH, curveHeight / TAROT_SHAPE_HEIGHT))
       if (height > curveHeight) mask.rect(0, curveHeight, width, height - curveHeight)
 
       const count = Math.max(28, Math.min(140, Math.round(width * height / 14000)))
@@ -115,7 +115,7 @@ function TarotParticles() {
     resize()
     const resizeObserver = new ResizeObserver(resize)
     resizeObserver.observe(section)
-    resizeObserver.observe(curve)
+    if (curve) resizeObserver.observe(curve)
 
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting && entry.intersectionRatio >= 0.01
@@ -132,9 +132,9 @@ function TarotParticles() {
       reducedMotion.removeEventListener('change', syncAnimation)
       document.removeEventListener('visibilitychange', syncAnimation)
     }
-  }, [])
+  }, [clipToTarot])
 
-  return <canvas ref={canvasRef} className="tarot-particles" aria-hidden="true" />
+  return <canvas ref={canvasRef} className={className} aria-hidden="true" />
 }
 
 export default TarotParticles

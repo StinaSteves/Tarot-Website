@@ -1,706 +1,33 @@
 import { useEffect, useRef } from 'react'
 import Nav from './components/Nav.jsx'
 import Tarot from './components/Tarot.jsx'
+import Rituals from './components/Rituals.jsx'
+import Booking from './components/Booking.jsx'
+import Footer from './components/Footer.jsx'
+import HeroFog from './components/HeroFog.jsx'
 import './App.css'
 
 import Hekate from './assets/img/Hekate.png'
 import Hunde from './assets/img/Hunde.png'
-import Heiligenschein from './assets/img/Heiligenschein.png'
-import Flag from './assets/img/flag2.png'
-
-function ShardBackground() {
-  const canvasRef = useRef(null)
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-
-    let width = 0
-    let height = 0
-    let animationFrame
-    let startTime = performance.now()
-
-    const shards = []
-
-    // =========================================
-    // SPLITTERFORMEN
-    // =========================================
-
-    const createPolygon = (
-      length,
-      thickness,
-      type
-    ) => {
-      if (type === 'needle') {
-        const tipWobble =
-          (
-            Math.random() -
-            0.5
-          ) *
-          thickness *
-          2.5
-
-        const tailWobble =
-          (
-            Math.random() -
-            0.5
-          ) *
-          thickness *
-          3
-
-        return [
-          {
-            x:
-              -length * 0.5 +
-              tailWobble,
-
-            y:
-              thickness *
-              (
-                Math.random() -
-                0.5
-              ) *
-              0.3,
-          },
-
-          {
-            x:
-              length * 0.48 +
-              tipWobble,
-
-            y:
-              -thickness *
-              (
-                0.7 +
-                Math.random() *
-                0.3
-              ),
-          },
-
-          {
-            x:
-              length * 0.53 +
-              tipWobble,
-
-            y: 0,
-          },
-
-          {
-            x:
-              length * 0.48 +
-              tipWobble,
-
-            y:
-              thickness *
-              (
-                0.7 +
-                Math.random() *
-                0.3
-              ),
-          },
-        ]
-      }
-
-      if (type === 'slash') {
-        const randomBend =
-          (
-            Math.random() -
-            0.5
-          ) *
-          length *
-          0.2
-
-        return [
-          {
-            x:
-              -length *
-              0.42,
-
-            y:
-              -thickness *
-              0.15,
-          },
-
-          {
-            x:
-              length *
-              0.45 +
-              randomBend,
-
-            y:
-              -thickness *
-              (
-                0.55 +
-                Math.random() *
-                0.12
-              ),
-          },
-
-          {
-            x:
-              length *
-                0.53 +
-              randomBend,
-
-            y:
-              thickness *
-              (
-                0.6 +
-                Math.random() *
-                0.18
-              ),
-          },
-
-          {
-            x:
-              -length *
-              0.35,
-
-            y:
-              thickness *
-              0.4,
-          },
-        ]
-      }
-
-      const bump =
-        (
-          Math.random() -
-          0.5
-        ) *
-        thickness *
-        0.8
-
-      return [
-        {
-          x:
-            -length *
-            0.32,
-
-          y:
-            thickness *
-              (
-                0.15 +
-                Math.random() *
-                0.2
-              ) +
-            bump,
-        },
-
-        {
-          x:
-            length *
-            0.12,
-
-          y:
-            -thickness *
-              (
-                0.65 +
-                Math.random() *
-                0.15
-              ) +
-            bump,
-        },
-
-        {
-          x:
-            length *
-            0.4,
-
-          y:
-            thickness *
-              (
-                0.12 +
-                Math.random() *
-                0.22
-              ) +
-            bump,
-        },
-
-        {
-          x:
-            length *
-            0.08,
-
-          y:
-            thickness *
-              (
-                0.65 +
-                Math.random() *
-                0.18
-              ) +
-            bump,
-        },
-      ]
-    }
-
-    // =========================================
-    // EINEN SPLITTER ERSTELLEN
-    // =========================================
-
-    const createShard = () => {
-      const depth =
-        Math.random()
-
-      const roll =
-        Math.random()
-
-      const type =
-        roll < 0.62
-          ? 'needle'
-          : roll < 0.88
-            ? 'slash'
-            : 'chunk'
-
-      const baseLength =
-        type === 'chunk'
-          ? 20 +
-            Math.random() *
-            35
-
-          : type === 'slash'
-            ? 38 +
-              Math.random() *
-              60
-
-            : 44 +
-              Math.random() *
-              110
-
-      const progress =
-        Math.pow(
-          Math.random(),
-          0.62
-        )
-
-      const growthStrength =
-        Math.pow(
-          progress,
-          1.22
-        )
-
-      // =========================================
-      // DICKE
-      // =========================================
-
-      const thickness =
-        type === 'chunk'
-          ? 1.1 +
-            growthStrength *
-              11 +
-            Math.random() *
-              2
-
-          : type === 'slash'
-            ? 0.7 +
-              growthStrength *
-                5.5 +
-              Math.random() *
-                1.25
-
-            : 0.34 +
-              growthStrength *
-                3.2 +
-              Math.random() *
-                0.7
-
-      // =========================================
-      // LÄNGE
-      // =========================================
-
-      const length =
-        baseLength *
-        (
-          0.55 +
-          growthStrength *
-            (
-              type === 'needle'
-                ? 1.45
-                : 1.22
-            )
-        )
-
-      // =========================================
-      // KURVE
-      // =========================================
-
-      const x =
-        progress *
-        width
-
-      const curveY =
-        height *
-        (
-          0.035 +
-          0.59 *
-            (
-              1 -
-              Math.pow(
-                1 -
-                  progress,
-                2.9
-              )
-            )
-        )
-
-      const band =
-        height *
-        (
-          0.1 +
-          progress *
-            0.38
-        )
-
-      const y =
-        curveY +
-        (
-          Math.random() -
-          0.5
-        ) *
-        band
-
-      // =========================================
-      // ROTATION
-      // =========================================
-
-      let rotation =
-        (
-          Math.random() -
-          0.5
-        ) *
-        (
-          type === 'needle'
-            ? 2.5
-            : 1.1
-        )
-
-      if (
-        Math.random() >
-        0.76
-      ) {
-        rotation +=
-          (
-            Math.random() -
-            0.5
-          ) *
-          (
-            type === 'needle'
-              ? 3.3
-              : 1.7
-          )
-      }
-
-      return {
-        depth,
-        type,
-        x,
-        y,
-        rotation,
-
-        phaseX:
-          Math.random() *
-          Math.PI *
-          2,
-
-        phaseY:
-          Math.random() *
-          Math.PI *
-          2,
-
-        moveX:
-          type === 'needle'
-            ? 14 +
-              Math.random() *
-              36
-
-            : 7 +
-              Math.random() *
-              16,
-
-        moveY:
-          type === 'needle'
-            ? 10 +
-              Math.random() *
-              19
-
-            : 4 +
-              Math.random() *
-              11,
-
-        speed:
-          0.00019 +
-          Math.random() *
-          0.00021,
-
-        sway:
-          0.025 +
-          Math.random() *
-          0.045,
-
-        alpha:
-          0.55 +
-          depth *
-          0.37,
-
-        points:
-          createPolygon(
-            length,
-            thickness,
-            type
-          ),
-      }
-    }
-
-    // =========================================
-    // SPLITTER ERZEUGEN
-    // =========================================
-
-    const populate = () => {
-      shards.length = 0
-
-      const count =
-        Math.max(
-          120,
-
-          Math.floor(
-            (
-              width *
-              height
-            ) /
-            6300
-          )
-        )
-
-      for (
-        let i = 0;
-        i < count;
-        i++
-      ) {
-        shards.push(
-          createShard()
-        )
-      }
-    }
-
-    // =========================================
-    // CANVAS
-    // =========================================
-
-    const resize = () => {
-      const dpr =
-        Math.min(
-          window.devicePixelRatio ||
-          1,
-          2
-        )
-
-      width =
-        window.innerWidth
-
-      height =
-        canvas.parentElement
-          ?.clientHeight ||
-        window.innerHeight
-
-      canvas.width =
-        Math.round(
-          width *
-          dpr
-        )
-
-      canvas.height =
-        Math.round(
-          height *
-          dpr
-        )
-
-      canvas.style.width =
-        `${width}px`
-
-      canvas.style.height =
-        `${height}px`
-
-      ctx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-      )
-
-      populate()
-
-      startTime =
-        performance.now()
-    }
-
-    // =========================================
-    // SPLITTER ZEICHNEN
-    // =========================================
-
-    const drawShard = (
-      shard,
-      time
-    ) => {
-      const x =
-        shard.x +
-        Math.sin(
-          time *
-            shard.speed +
-          shard.phaseX
-        ) *
-        shard.moveX
-
-      const y =
-        shard.y +
-        Math.cos(
-          time *
-            shard.speed +
-          shard.phaseY
-        ) *
-        shard.moveY
-
-      const scale =
-        0.62 +
-        shard.depth *
-        0.78
-
-      const rotation =
-        shard.rotation +
-        Math.sin(
-          time *
-            shard.speed *
-            0.61 +
-          shard.phaseX
-        ) *
-        shard.sway
-
-      ctx.save()
-
-      ctx.translate(
-        x,
-        y
-      )
-
-      ctx.rotate(
-        rotation
-      )
-
-      ctx.scale(
-        scale,
-        scale
-      )
-
-      ctx.beginPath()
-
-      shard.points.forEach(
-        (
-          point,
-          index
-        ) => {
-          if (
-            index === 0
-          ) {
-            ctx.moveTo(
-              point.x,
-              point.y
-            )
-          } else {
-            ctx.lineTo(
-              point.x,
-              point.y
-            )
-          }
-        }
-      )
-
-      ctx.closePath()
-
-      ctx.fillStyle =
-        `rgba(
-          255,
-          255,
-          255,
-          ${shard.alpha}
-        )`
-
-      ctx.fill()
-
-      ctx.restore()
-    }
-
-    // =========================================
-    // ANIMATION
-    // =========================================
-
-    const animate = (
-      timestamp
-    ) => {
-      const time =
-        timestamp -
-        startTime
-
-      ctx.clearRect(
-        0,
-        0,
-        width,
-        height
-      )
-
-      shards.forEach(
-        (shard) => {
-          drawShard(
-            shard,
-            time
-          )
-        }
-      )
-
-      animationFrame =
-        requestAnimationFrame(
-          animate
-        )
-    }
-
-    // =========================================
-    // START
-    // =========================================
-
-    resize()
-
-    animationFrame =
-      requestAnimationFrame(
-        animate
-      )
-
-    window.addEventListener(
-      'resize',
-      resize
-    )
-
-    return () => {
-      cancelAnimationFrame(
-        animationFrame
-      )
-
-      window.removeEventListener(
-        'resize',
-        resize
-      )
-    }
-  }, [])
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="shard-background"
-      aria-hidden="true"
-    />
-  )
-}
+import Heiligenschein from './assets/img/newHalo.png'
+import Berg1 from './assets/img/Berg1.png'
+import Berg2 from './assets/img/Berg2.png'
+import Berg3 from './assets/img/Berg3.png'
+import Berg4 from './assets/img/Berg4.png'
+import NeuBG from './assets/img/layerNeu.png'
+
+// All four exports share a canvas; keep their framing identical.
+const mountains = [Berg1, Berg2, Berg3, Berg4]
+// Keep the back ridge's gentle drift, while the front ridges stay nearly
+// anchored to the scene: 28.8px vs 3.2px extra movement per 100px of scrolling.
+const mountainScrollOffsets = [0.72, 0.08, 0.04, 0]
+const landscapeScrollStrength = 0.4
 
 function App() {
+  const landingRef = useRef(null)
+  const mountainRefs = useRef([])
+  const cloudRefs = useRef([])
+
   const hekateRef =
     useRef(null)
 
@@ -727,6 +54,48 @@ function App() {
 
   const currentHundeY =
     useRef(0)
+
+  useEffect(() => {
+    const landing = landingRef.current
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let frame
+
+    const updateMountains = () => {
+      frame = undefined
+      const { top } = landing.getBoundingClientRect()
+      const height = landing.querySelector('.mountain-scene').clientHeight
+      const distance = Math.max(0, Math.min(-top, height)) * landscapeScrollStrength
+
+      mountainRefs.current.forEach((layer, index) => {
+        if (!layer) return
+        layer.style.transform = reducedMotion.matches
+          ? 'none'
+          : `translate3d(0, ${distance * mountainScrollOffsets[index]}px, 0)`
+      })
+      cloudRefs.current.forEach((layer, index) => {
+        if (!layer) return
+        layer.style.transform = reducedMotion.matches
+          ? 'none'
+          : `translate3d(0, ${distance * (index === 0 ? 0.56 : 0.32)}px, 0)`
+      })
+    }
+
+    const scheduleUpdate = () => {
+      if (frame === undefined) frame = requestAnimationFrame(updateMountains)
+    }
+
+    updateMountains()
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    reducedMotion.addEventListener('change', scheduleUpdate)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      reducedMotion.removeEventListener('change', scheduleUpdate)
+    }
+  }, [])
 
   useEffect(() => {
     let animationFrame
@@ -945,7 +314,10 @@ function App() {
 
   return (
     <>
+    <main className="site-sections">
       <div
+        ref={landingRef}
+        id="home"
         className="landing"
 
         onPointerMove={
@@ -961,8 +333,49 @@ function App() {
         }
       >
 
-        <ShardBackground />
+        <div className="mountain-scene" aria-hidden="true">
+          {mountains.map((src, index) => (
+            <div
+              key={src}
+              ref={element => { mountainRefs.current[index] = element }}
+              className="mountain-layer"
+              style={{ zIndex: (index + 1) * 10 }}
+            >
+              <img
+                className={`mountain-art mountain-art--${index + 1}`}
+                src={src}
+                alt=""
+                draggable={false}
+              />
+            </div>
+          ))}
+          {['distant', 'valley'].map((depth, index) => (
+            <div
+              key={depth}
+              ref={element => { cloudRefs.current[index] = element }}
+              className={`cloud-layer cloud-layer--${depth}`}
+            >
+              <HeroFog depth={depth} />
+            </div>
+          ))}
+        </div>
 
+        <img
+          className="landscape-overlay"
+          src={NeuBG}
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+        />
+
+        <div className="hero-values-frame">
+          <ul className="hero-values" aria-label="Leitgedanken">
+            <li>Intuition</li>
+            <li>Wissen</li>
+            <li>Wandel</li>
+            <li>Freiheit</li>
+          </ul>
+        </div>
 
         <svg
           width="0"
@@ -1138,61 +551,49 @@ function App() {
         </div>
 
 
-        <h1
-          className="landing-title"
-        >
-          Zwischen den Welten
-        </h1>
-
-
-        <img
-          src={
-            Flag
-          }
-
-          alt="Flag"
-
-          className="hekate-portrait"
-        />
-
-
-        <div
-          className="hero-cta"
-          aria-label="Mehr erfahren"
-        >
-
-          <div
-            className="hero-cta-lines hero-cta-lines-top"
-          >
-            <span
-              className="hero-line hero-line-short"
-            />
-
-            <span
-              className="hero-line hero-line-long"
-            />
-          </div>
-
-
+        <div className="hero-copy">
+          <p className="hero-eyebrow">Tarot · Astrologie · Rituale</p>
+          <h1 className="landing-title">
+            <span>zwischen</span>
+            <span>den welten</span>
+          </h1>
+          <span className="hero-copy-divider" aria-hidden="true" />
+          <p className="hero-description">
+            Klarheit finden. Muster erkennen.<br />
+            Deinen eigenen Weg gehen.
+          </p>
           <button
             type="button"
             className="hero-cta-button"
+            onClick={() => document.querySelector('.tarot-section')?.scrollIntoView({
+              behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            })}
           >
-            LEARN MORE
+            <span>Mehr erfahren</span>
+            <svg width="28" height="16" viewBox="0 0 28 16" fill="none" aria-hidden="true">
+              <path d="M1 8h24M20 3l5 5-5 5" stroke="currentColor" strokeWidth="1" />
+            </svg>
           </button>
-
-
-          <span
-            className="hero-line hero-line-bottom"
-          />
-
         </div>
 
       </div>
 
 
       <Tarot />
+      <div className="ritual-contact-group">
+        <Rituals />
+        <div className="ritual-contact-divider" aria-hidden="true">
+          <svg viewBox="0 0 40 400" preserveAspectRatio="none" fill="none">
+            <defs><linearGradient id="ritual-contact-ink" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="400"><stop stopColor="#c1bdb5"/><stop offset=".5" stopColor="#999084"/><stop offset="1" stopColor="#61585f"/></linearGradient></defs>
+            <path d="M20 0V400" stroke="url(#ritual-contact-ink)" strokeWidth=".7"/>
+            <path d="m20 182 2 14 11-9-9 11 15 2-15 2 9 11-11-9-2 14-2-14-11 9 9-11-15-2 15-2-9-11 11 9Z" transform="translate(20 235) scale(.75) translate(-20 -200)" fill="#171717"/>
+          </svg>
+        </div>
+        <Booking />
+      </div>
 
+    </main>
+    <Footer />
     </>
   )
 }

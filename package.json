@@ -7,11 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:api": "node --env-file-if-exists=.env --watch server/index.mjs",
+    "start:api": "node --env-file-if-exists=.env server/index.mjs",
+    "test": "node --test server/*.test.mjs"
   },
   "dependencies": {
+    "nodemailer": "^10.0.10",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "three": "^0.186.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

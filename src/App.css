@@ -4,14 +4,19 @@
   box-sizing: border-box;
 }
 
+/* VARIABLES */
+
 :root {
   --hero-surface: #b7b7b7;
-  --tarot-surface: #dedede;
+  --tarot-surface: #e5e3df;
+  --tarot-curve-height: clamp(110px, 12vw, 200px);
+  --hero-section-height: max(100vh, calc((100vh - var(--tarot-curve-height)) * 1.35));
+  --hero-scene-height: calc(var(--hero-section-height) + var(--tarot-curve-height));
 }
 
-html,
-body,
-#root {
+/* GLOBAL */
+
+html, body, #root {
   width: 100%;
   min-height: 100%;
   scrollbar-width: none;
@@ -21,30 +26,31 @@ body {
   background-color: rgb(175, 175, 175);
   color: white;
   font-family: Arial, Helvetica, sans-serif;
-  -ms-overflow-style: none;
 }
 
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
+html::-webkit-scrollbar, body::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
 }
 
+/* NAVIGATION */
 
-/* ========================================
-   NAVIGATION
-======================================== */
+@font-face {
+  font-family: 'Barlow';
+  src: url('./assets/fonts/Barlow-Light.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+}
 
 .nav {
   position: fixed;
   top: 0;
   width: 100%;
   padding: 1rem 0;
-
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba( 0, 0, 0, 0.8 );
   backdrop-filter: blur(10px);
-
   z-index: 100;
 }
 
@@ -58,231 +64,292 @@ body::-webkit-scrollbar {
   display: flex;
   justify-content: center;
   gap: 2rem;
-
   list-style: none;
 }
 
 .nav-link {
   color: white;
   text-decoration: none;
-
   font-size: 1rem;
-  font-weight: 500;
-
+  font-family: 'Barlow', Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: .09em;
   transition: color 0.3s ease;
 }
 
 .nav-link:hover {
-  color: rgb(200, 100, 150);
+  color: rgb( 200, 100, 150 );
 }
 
+/* HERO */
 
-/* ========================================
-   HERO
-======================================== */
+.ritual-contact-group { position: relative; }
+.ritual-contact-divider { position: relative; height: 0; z-index: 3; pointer-events: none; }
+.ritual-contact-divider svg { position: absolute; left: 89.4%; top: 0; width: clamp(28px, 2.82vw, 48px); height: clamp(220px, 30vw, 440px); transform: translate(-50%, -50%); }
+@media (max-width: 700px) { .ritual-contact-divider svg { height: 170px; width: 26px; } }
 
-.landing {
-  position: relative;
-
-  min-height: 100vh;
-
-  overflow: hidden;
-
-  perspective: 900px;
-
-  padding-top: 60px;
-
+.site-sections {
+  /* Clip sideways artwork without cutting the scene at the section boundary or creating a scroll container that would break the reveal animations. */
+  overflow: clip;
   background: var(--hero-surface);
 }
 
-.landing::before {
-  content: '';
-
-  position: absolute;
-
-  left: 0;
-  top: 0;
-
-  width: 70%;
-  height: 35vh;
-
-  background: rgba(11, 11, 14, 0.95);
-
-  z-index: 0;
+.landing {
+  position: relative;
+  /* The remaining image height continues behind the curve inside Tarot. */
+  min-height: var(--hero-section-height);
+  overflow: visible;
+  perspective: 900px;
+  padding-top: 60px;
+  background: var(--hero-surface);
 }
 
+/* All mountain exports retain the same scale and origin. Particle mist sits between the ridges and flows independently of their scroll offsets. */
 
-/* ========================================
-   SPLITTER BACKGROUND
-======================================== */
-
-.shard-background {
+.mountain-scene {
   position: absolute;
-
-  left: 0;
   top: 0;
-
-  width: 100vw;
-  height: 100%;
-
-  display: block;
-
+  left: 0;
+  width: 100%;
+  height: var(--hero-scene-height);
   pointer-events: none;
+  isolation: isolate;
+  z-index: 1;
+}
 
-  opacity: 1;
-  visibility: visible;
-
-  background: transparent;
-
-  mix-blend-mode: difference;
-
-  filter: brightness(0.85);
-
+.landscape-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: var(--hero-scene-height);
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
   z-index: 2;
 }
 
+/* Match the overlay's contained image frame, so the words stay inside its right-hand ornament even when the viewport aspect ratio changes. */
 
-/* ========================================
-   HERO TITLE
-======================================== */
-
-.landing-title {
+.hero-values-frame {
   position: absolute;
-
-  top: 45vh;
+  top: var(--hero-scene-height);
   left: 50%;
-
-  transform: translateX(-50%);
-
-  width: max-content;
-  max-width: calc(100% - 2rem);
-
-  text-align: center;
-  white-space: nowrap;
-
-  font-family: Arial, Helvetica, sans-serif;
-
-  font-size: clamp(
-    3rem,
-    8vw,
-    10rem
-  );
-
-  font-weight: 700;
-
-  line-height: 0.8;
-
-  letter-spacing: -0.07em;
-
-  text-transform: lowercase;
-
-  color: rgba(
-    255,
-    255,
-    255,
-    0.96
-  );
-
-  z-index: 5;
+  width: min(100%, calc(var(--hero-scene-height) * 1.7786458333));
+  aspect-ratio: 1366 / 768;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  z-index: 4;
 }
 
+.hero-values {
+  position: absolute;
+  top: 23%;
+  right: 2.5%;
+  width: 9%;
+  display: grid;
+  gap: clamp(16px, 1.1vw, 26px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #363337;
+  font-size: clamp(0.5rem, 0.7vw, 0.85rem);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.32em;
+  text-align: center;
+  text-transform: uppercase;
+}
 
-/* ========================================
-   HEKATE GROUP
-======================================== */
+.mountain-layer, .cloud-layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.mountain-art {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--hero-scene-height) * -0.32);
+  display: block;
+  width: min(156.735vw, calc(var(--hero-scene-height) * 1.296));
+  height: auto;
+}
+
+/* The first export also contains an unrelated collage fragment above its ridge. */
+
+.mountain-art--1 {
+  clip-path: polygon(0 0, 62% 0, 62% 55%, 100% 73%, 100% 100%, 0 100%);
+}
+
+.cloud-layer--distant {
+  z-index: 15;
+}
+
+.cloud-layer--valley {
+  z-index: 25;
+}
+
+.hero-fog {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .mountain-art {
+    left: -16%;
+    bottom: calc(var(--hero-scene-height) * -0.12);
+    width: 227.8125%;
+  }
+}
+
+/* HERO TITLE */
+
+.hero-copy {
+  position: absolute;
+  top: clamp(110px, 16vh, 240px);
+  left: 6.5%;
+  width: 44%;
+  z-index: 5;
+  animation: hero-copy-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+
+.hero-eyebrow {
+  margin-bottom: clamp(24px, 3.5vh, 44px);
+  color: #343335;
+  font-size: clamp(0.6rem, 0.75vw, 0.9rem);
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.landing-title {
+  margin: 0;
+  color: #f8f6f3;
+  font-family: 'Bodoni 72', Didot, 'Times New Roman', serif;
+  font-size: clamp(3.75rem, min(8.4vw, 14vh), 13rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-align: left;
+}
+
+.landing-title span {
+  display: block;
+  white-space: nowrap;
+}
+
+.hero-copy-divider {
+  display: block;
+  width: clamp(52px, 5.2vw, 95px);
+  height: 1px;
+  margin: clamp(26px, 4.6vh, 58px) 0 clamp(24px, 3.8vh, 46px);
+  background: rgba(248, 246, 243, 0.8);
+}
+
+.hero-description {
+  color: #f3f0ed;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1rem, 1.4vw, 1.65rem);
+  font-weight: 400;
+  letter-spacing: 0.025em;
+  line-height: 1.45;
+}
+
+.hero-copy .hero-cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-width: 230px;
+  margin-top: clamp(28px, 4.5vh, 56px);
+  padding: 18px 25px;
+  border: 1px solid #c8c0ad;
+  font-size: clamp(0.65rem, 0.8vw, 0.85rem);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero-copy .hero-cta-button svg {
+  color: #c8c0ad;
+  flex-shrink: 0;
+}
+
+.hero-copy .hero-cta-button:focus-visible {
+  outline: 2px solid #f8f6f3;
+  outline-offset: 5px;
+}
+
+/* HEKATE GROUP */
 
 .hekate-group {
   position: absolute;
-
   top: 0;
-  left: 50%;
-
-  width: 75vh;
-  height: 90vh;
-
+  left: 70%;
+  width: calc(var(--hero-scene-height) * 0.75);
+  height: calc(var(--hero-scene-height) * 0.9);
   transform: translateX(-50%);
-
   perspective: 900px;
-
   pointer-events: none;
-
   z-index: 3;
 }
 
-.hekate-motion,
-.heiligenschein,
-.hunde {
+.hekate-motion, .heiligenschein, .hunde {
   will-change: transform;
 }
 
 .hekate-motion {
   position: relative;
-
-  width: 100%;
-  height: 100%;
-
+  /* Move the figure and dogs together, independently of the halo. */
+  top: calc(var(--hero-scene-height) * 0.09);
+  left: -7.5%;
+  width: 115%;
+  height: 115%;
   z-index: 1;
 }
 
-
-/* ========================================
-   HEKATE
-======================================== */
+/* HEKATE */
 
 .hekate {
   position: relative;
-
   display: block;
-
   width: 100%;
   height: 100%;
-
   object-fit: contain;
-
   z-index: 1;
 }
 
-
-/* ========================================
-   HEILIGENSCHEIN
-======================================== */
+/* HEILIGENSCHEIN */
 
 .heiligenschein {
   position: absolute;
-
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
+  top: -7.5%;
+  left: -7.5%;
+  width: 115%;
+  height: 115%;
   object-fit: contain;
-
   z-index: 0;
 }
 
-
-/* ========================================
-   HUNDE
-======================================== */
+/* HUNDE */
 
 .hunde {
   position: absolute;
-
   inset: 0;
-
   pointer-events: none;
-
   z-index: 0;
 }
 
 .hund {
   position: absolute;
-
   inset: 0;
-
   width: 100%;
   height: 100%;
-
   object-fit: contain;
 }
 
@@ -294,488 +361,146 @@ body::-webkit-scrollbar {
   clip-path: url("#hund-rechts");
 }
 
-
-/* ========================================
-   FLAG
-======================================== */
-
-.hekate-portrait {
-  position: absolute;
-
-  left: 0;
-  top: 52%;
-
-  width: min(
-    55vw,
-    1220px
-  );
-
-  max-width: 1220px;
-
-  display: block;
-
-  object-fit: contain;
-
-  filter:
-    saturate(0.75)
-    contrast(1.05);
-
-  transform:
-    translate(
-      -10%,
-      -50%
-    );
-
-  z-index: 4;
-}
-
-
-/* ========================================
-   HERO CTA / DEKORATIVE LINIEN
-======================================== */
-
-.hero-cta {
-  position: absolute;
-
-  left: 6.5vw;
-  top: 68vh;
-
-  display: flex;
-
-  flex-direction: column;
-  align-items: flex-start;
-
-  gap: 2rem;
-
-  pointer-events: auto;
-
-  z-index: 6;
-}
-
-.hero-cta-lines {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 0.55rem;
-}
-
-.hero-line {
-  display: block;
-
-  height: 5px;
-
-  background: rgba(
-    255,
-    255,
-    255,
-    0.96
-  );
-}
-
-.hero-line-short {
-  width: 140px;
-}
-
-.hero-line-long {
-  width: 265px;
-}
-
-.hero-line-bottom {
-  width: 140px;
-
-  margin-top: 0.25rem;
-}
+/* HERO CTA */
 
 .hero-cta-button {
-  min-width: 145px;
-
-  padding:
-    0.85rem
-    1.35rem;
-
-  border: 0;
-
   background: #090909;
-
   color: white;
-
   font: inherit;
-
-  font-size: 0.7rem;
-
-  font-weight: 700;
-
-  letter-spacing: 0.18em;
-
   cursor: pointer;
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
+  transition: transform 0.2s ease, background 0.2s ease;
+  animation: hero-button-in 1.25s cubic-bezier( 0.16, 1, 0.3, 1 ) 1.15s backwards;
 }
 
 .hero-cta-button:hover {
   transform: translateY(-2px);
-
   background: #1b1b1b;
 }
 
-
-/* ========================================
-   TAROT SECTION
-======================================== */
-.tarot-section {
-  --tarot-visual-height: min(86vh, 1040px);
-  --tarot-padding-top: clamp(3rem, 5vw, 5rem);
-  --tarot-curve-height: calc(var(--tarot-visual-height) + var(--tarot-padding-top) + 2rem);
-
-  position: relative;
-
-  isolation: isolate;
-
-  min-height: 100vh;
-  width: 100%;
-
-  display: grid;
-
-  grid-template-columns:
-    minmax(0, 1.3fr)
-    minmax(0, 0.85fr);
-
-  align-items: center;
-
-  gap: clamp(
-    2rem,
-    4vw,
-    5rem
-  );
-
-  padding:
-    var(--tarot-padding-top)
-    clamp(2rem, 5vw, 7rem)
-    clamp(2rem, 3vw, 3rem);
-
-  /* Die gesamte Kurve liegt innerhalb dieser Section. */
-  overflow: hidden;
-
-  background: var(--hero-surface);
-
-  color: #111114;
-
-  z-index: 1;
-}
-
-
-.tarot-transition {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: var(--tarot-curve-height);
-  display: block;
-  fill: var(--tarot-surface);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Die helle Fläche unter der Kurve nahtlos bis ans Section-Ende fortsetzen. */
-.tarot-section::after {
-  content: '';
-  position: absolute;
-  inset: calc(var(--tarot-curve-height) - 1px) 0 0;
-  background: var(--tarot-surface);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ========================================
-   LINKE SEITE / TAROT KOMPOSITION
-======================================== */
-
-.tarot-particles {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.tarot-visual {
-  position: relative;
-
-  width: 100%;
-  max-width: 960px;
-
-  height: var(--tarot-visual-height);
-
-  justify-self: center;
-
-  z-index: 2;
-}
-
-
-/* ========================================
-   TAROTKARTE
-======================================== */
-
-.tarot-card {
-  position: absolute;
-
-  left: 2%;
-  top: 2%;
-
-  width: 78%;
-  height: 84%;
-
-  object-fit: contain;
-
-  z-index: 4;
-}
-
-
-/* ========================================
-   OUTLINE HINTER DER KARTE
-======================================== */
-
-.tarot-outline {
-  position: absolute;
-
-  border:
-    3px solid
-    rgba(
-      20,
-      20,
-      20,
-      0.72
-    );
-
-  z-index: 1;
-}
-
-.tarot-outline-top {
-  left: -5%;
-  top: 8%;
-
-  width: 78%;
-  height: 53%;
-}
-
-
-/* ========================================
-   ORANGER BLOCK
-======================================== */
-
-.tarot-orange-block {
-  position: absolute;
-
-  left: 70%;
-  top: 11%;
-
-  width: 14%;
-  height: 56%;
-
-  background: #f06b32;
-
-  z-index: 2;
-}
-
-
-/* ========================================
-   SCHWARZER BLOCK
-======================================== */
-
-.tarot-black-block {
-  position: absolute;
-
-  right: 2%;
-  top: 24%;
-
-  width: 31%;
-  height: 63%;
-
-  background: #171717;
-
-  z-index: 0;
-}
-
-
-/* ========================================
-   BUCHUNGSBUTTON
-======================================== */
-
-.tarot-booking {
-  position: absolute;
-
-  left: -1%;
-  bottom: 0;
-
-  width: 78%;
-  height: 12%;
-
-  display: flex;
-
-  align-items: center;
-  justify-content: center;
-
-  z-index: 5;
-}
-
-
-/* ========================================
-   RECHTE SEITE / TEXT
-======================================== */
-
-.tarot-content {
-  position: relative;
-
-  max-width: 700px;
-
-  align-self: center;
-
-  z-index: 2;
-}
-
-.tarot-kicker {
-  margin-bottom: 1.25rem;
-
-  font-size: 0.72rem;
-
-  font-weight: 700;
-
-  letter-spacing: 0.2em;
-
-  text-transform: uppercase;
-}
-
-.tarot-content h2 {
-  margin: 0;
-
-  max-width: 8ch;
-
-  font-size: clamp(
-    2.75rem,
-    4.5vw,
-    5rem
-  );
-
-  line-height: 1;
-
-  letter-spacing: -0.055em;
-
-  font-weight: 800;
-}
-
-.tarot-divider {
-  display: block;
-
-  width: 90px;
-  height: 3px;
-
-  margin: 2.25rem 0;
-
-  background: #161616;
-}
-
-.tarot-description {
-  max-width: 620px;
-
-  font-size: clamp(
-    1rem,
-    1.05vw,
-    1.1rem
-  );
-
-  line-height: 1.85;
-
-  color: #353535;
-}
-
-.tarot-small-line {
-  display: block;
-
-  width: 55px;
-  height: 3px;
-
-  margin-top: 3rem;
-
-  margin-left: auto;
-
-  background: #161616;
-}
-
-
-/* ========================================
-   RESPONSIVE
-======================================== */
-
-@media (max-width: 900px) {
-
-  .hekate-group {
-    width: 65vh;
-    height: 80vh;
+/* HERO ANIMATIONEN */
+
+@keyframes hero-copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
   }
 
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-button-in {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* RESPONSIVE */
+
+@media ( max-width: 900px ) {
+  .hekate-group {
+    width: calc(var(--hero-scene-height) * 0.65);
+    height: calc(var(--hero-scene-height) * 0.8);
+  }
+
+  .hekate-motion {
+    top: calc(var(--hero-scene-height) * 0.19);
+  }
+
+  .hero-copy {
+    top: max(100px, 13vh);
+    left: 5%;
+    width: 47%;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.55rem;
+    letter-spacing: 0.24em;
+  }
 
   .landing-title {
-    font-size: clamp(
-      3rem,
-      10vw,
-      6rem
-    );
+    font-size: clamp(2.75rem, 8vw, 4.5rem);
   }
 
+  .hero-description {
+    font-size: 0.95rem;
+  }
+}
 
-  .hekate-portrait {
-    max-width: 65vw;
+@media (min-width: 901px) and (max-width: 1600px) {
+  .hekate-group {
+    left: 67%;
+  }
+}
+
+@media (max-width: 600px) {
+  .hekate-group {
+    left: 85%;
   }
 
-
-  .hero-cta {
-    left: 5vw;
-    top: 66vh;
-
-    transform:
-      scale(0.8);
-
-    transform-origin:
-      left top;
+  .hero-values-frame {
+    top: calc(var(--hero-scene-height) * 0.45);
+    left: 38%;
+    width: auto;
+    aspect-ratio: auto;
+    transform: none;
   }
 
-
-  .tarot-section {
-    --tarot-visual-height: min(70vh, 760px);
-    --tarot-curve-height: calc(var(--tarot-visual-height) + 5rem);
-
-    grid-template-columns: 1fr;
-
-    gap: 2.5rem;
-
-    padding:
-      6rem
-      1.5rem;
+  .hero-values {
+    position: static;
+    width: auto;
+    grid-template-columns: max-content;
+    gap: 14px;
+    font-size: 0.53rem;
+    letter-spacing: 0.24em;
+    text-align: left;
   }
 
-
-  .tarot-visual {
-    max-width: 640px;
+  .hero-copy {
+    top: 105px;
+    left: 6%;
+    width: 88%;
   }
 
-
-  .tarot-content {
-    max-width: 100%;
+  .hero-eyebrow {
+    margin-bottom: 24px;
+    font-size: 0.58rem;
   }
 
+  .landing-title {
+    font-size: clamp(2.9rem, 12vw, 4.5rem);
+  }
 
-  .tarot-content h2 {
-    max-width: none;
+  .hero-copy-divider {
+    margin: 26px 0 22px;
+  }
 
-    font-size: clamp(
-      2.5rem,
-      10vw,
-      4.5rem
-    );
+  .hero-description {
+    max-width: 290px;
+    font-size: 0.87rem;
+  }
+
+  .hero-copy .hero-cta-button {
+    min-width: 210px;
+    margin-top: 26px;
+    padding: 16px 20px;
+  }
+}
+
+/* REDUCED MOTION */
+
+@media ( prefers-reduced-motion: reduce ) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
   }
 }
