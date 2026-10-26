@@ -1,16 +1,35 @@
-# React + Vite
+# NYX · Tarot-Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React/Vite-Website mit Tarot-Legungen, Ritualen, Preisen und Kontaktbereich.
 
-Currently, two official plugins are available:
+## Lokal starten
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```sh
+npm ci
+npm run dev
+```
 
-## React Compiler
+Das optionale Kontakt-Backend ist in [server/README.md](server/README.md) beschrieben.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## GitHub Pages
 
-## Expanding the ESLint configuration
+Pushes auf `main` starten `.github/workflows/pages.yml`: Tests, Build und Deployment.
+In den Repository-Einstellungen muss Pages als Quelle **GitHub Actions** verwenden.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Öffentliche Adresse: https://stinasteves.github.io/Tarot-Website/
+
+Pages liefert ausschließlich die statische Website aus. Der Workflow setzt
+`VITE_STATIC_PREVIEW=true`: Das Kontaktformular zeigt einen Vorschauhinweis und
+ist deaktiviert, bis ein separater Mailserver eingerichtet wird. Lokale Builds
+bleiben davon unberührt. Impressum, Datenschutz und AGB enthalten noch markierte
+Entwürfe und Platzhalter; siehe [Rechtstexte](src/legal/README.md).
+
+Der Pages-Build verwendet `--base=/Tarot-Website/`. Interne Seitenlinks nutzen
+`import.meta.env.BASE_URL`, damit sowohl lokale als auch veröffentlichte URLs stimmen.
+
+## Prüfen
+
+```sh
+npm test
+VITE_STATIC_PREVIEW=true npm run build -- --base=/Tarot-Website/
+```

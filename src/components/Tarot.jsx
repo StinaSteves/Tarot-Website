@@ -75,9 +75,9 @@ function Tarot() {
         <button
           type="button"
           className="hero-cta-button tarot-booking-button"
-          onClick={() => document.getElementById('termin-buchen')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}
+          onClick={() => document.getElementById('preise')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })}
         >
-          <span>JETZT BUCHEN</span>
+          <span>LEGUNGEN & PREISE</span>
 
           <svg viewBox="0 0 36 16" fill="none" aria-hidden="true">
             <path d="M1 8h32M26 1l7 7-7 7" />

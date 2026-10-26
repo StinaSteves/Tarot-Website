@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Nav from './components/Nav.jsx'
 import Tarot from './components/Tarot.jsx'
+import Pricing from './components/Pricing.jsx'
 import Rituals from './components/Rituals.jsx'
 import Booking from './components/Booking.jsx'
 import Footer from './components/Footer.jsx'
@@ -24,6 +25,15 @@ const mountainScrollOffsets = [0.72, 0.08, 0.04, 0]
 const landscapeScrollStrength = 0.4
 
 function App() {
+  const [selectedReading, setSelectedReading] = useState(null)
+  useEffect(() => {
+    // React mounts after the browser's initial anchor lookup on page navigation.
+    const target = document.getElementById(window.location.hash.slice(1))
+    if (!target) return
+    const frame = requestAnimationFrame(() => target.scrollIntoView({ behavior: 'instant' }))
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
   const landingRef = useRef(null)
   const mountainRefs = useRef([])
   const cloudRefs = useRef([])
@@ -100,6 +110,7 @@ function App() {
   useEffect(() => {
     let animationFrame
     let previousTime
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 
     let hundeVelocityX = 0
     let hundeVelocityY = 0
@@ -263,15 +274,34 @@ function App() {
         )
     }
 
-    animationFrame =
-      requestAnimationFrame(
-        animate
-      )
+    const syncAnimation = () => {
+      cancelAnimationFrame(animationFrame)
+      previousTime = undefined
 
-    return () =>
-      cancelAnimationFrame(
-        animationFrame
-      )
+      if (reducedMotion.matches) {
+        currentHekateX.current = 0
+        currentHeiligenscheinX.current = 0
+        currentHundeX.current = 0
+        currentHundeY.current = 0
+        hundeVelocityX = 0
+        hundeVelocityY = 0
+        for (const element of [hekateRef.current, heiligenscheinRef.current, hundeRef.current]) {
+          if (element) element.style.transform = 'none'
+        }
+      } else if (!document.hidden) {
+        animationFrame = requestAnimationFrame(animate)
+      }
+    }
+
+    syncAnimation()
+    reducedMotion.addEventListener('change', syncAnimation)
+    document.addEventListener('visibilitychange', syncAnimation)
+
+    return () => {
+      cancelAnimationFrame(animationFrame)
+      reducedMotion.removeEventListener('change', syncAnimation)
+      document.removeEventListener('visibilitychange', syncAnimation)
+    }
   }, [])
 
   const handlePointerMove =
@@ -314,6 +344,7 @@ function App() {
 
   return (
     <>
+    <Nav />
     <main className="site-sections">
       <div
         ref={landingRef}
@@ -470,9 +501,6 @@ function App() {
         </svg>
 
 
-        <Nav />
-
-
         <div
           className="hekate-group"
         >
@@ -582,6 +610,7 @@ function App() {
       <Tarot />
       <div className="ritual-contact-group">
         <Rituals />
+        <Pricing onSelect={setSelectedReading} />
         <div className="ritual-contact-divider" aria-hidden="true">
           <svg viewBox="0 0 40 400" preserveAspectRatio="none" fill="none">
             <defs><linearGradient id="ritual-contact-ink" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="400"><stop stopColor="#c1bdb5"/><stop offset=".5" stopColor="#999084"/><stop offset="1" stopColor="#61585f"/></linearGradient></defs>
@@ -589,7 +618,7 @@ function App() {
             <path d="m20 182 2 14 11-9-9 11 15 2-15 2 9 11-11-9-2 14-2-14-11 9 9-11-15-2 15-2-9-11 11 9Z" transform="translate(20 235) scale(.75) translate(-20 -200)" fill="#171717"/>
           </svg>
         </div>
-        <Booking />
+        <Booking selectedReading={selectedReading} onClearReading={() => setSelectedReading(null)} />
       </div>
 
     </main>

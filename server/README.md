@@ -26,3 +26,5 @@ Rate-Limit: fünf Versuche je Stunde und Socket-IP, im Speicher eines einzelnen 
 ## Freies Kontaktformular
 
 Die neue Oberfläche sendet `{ kind: 'contact', topic, name, email, message, website }` an denselben Endpunkt. Zulässige Themen: Liebe, Karriere, Geld, Familie, Tarot und Allgemeines. Ein Datum oder eine Uhrzeit ist für diese Nachrichten nicht erforderlich. Der bisherige Terminanfrage-Payload wird weiterhin validiert unterstützt; die neue Oberfläche übermittelt keine erfundenen Termine. Versandkonfiguration, fester Empfänger, Reply-To und Missbrauchsschutz bleiben gleich.
+
+Die Preissektion kann zusätzlich `reading` (`impuls`, `klarheit` oder `tiefgang`) übergeben. Das Backend ergänzt Dauer und Preis aus `src/data/readings.js` in der E-Mail. Vom Client mitgeschickte Preis- oder Dauerangaben werden nicht verwendet. Anfragen ohne Auswahl funktionieren weiterhin. Beim Bereitstellen des Backends muss diese gemeinsame Datendatei neben `server/` mitkopiert werden.

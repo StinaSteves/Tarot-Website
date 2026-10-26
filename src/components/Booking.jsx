@@ -11,13 +11,14 @@ function ContactStar({ className }) {
   return <svg className={className} viewBox="0 0 60 100" fill="none" aria-hidden="true"><path d="M30 0v100M0 52h60" stroke="currentColor" strokeWidth=".6"/><path d="m30 32 3 16 13-10-10 13 20 2-20 2 10 13-13-10-3 17-3-17-13 10 10-13-20-2 20-2-10-13 13 10Z" fill="currentColor"/></svg>
 }
 
-export default function Booking() {
+export default function Booking({ selectedReading, onClearReading }) {
+  const isPreview = import.meta.env.VITE_STATIC_PREVIEW === 'true'
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
 
   const submitRequest = async event => {
     event.preventDefault()
-    if (status === 'sending' || status === 'sent') return
+    if (isPreview || status === 'sending' || status === 'sent') return
     const form = new FormData(event.currentTarget)
     setStatus('sending')
     setError('')
@@ -25,7 +26,7 @@ export default function Booking() {
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: 'contact', topic: 'Allgemeines', name: form.get('name'), email: form.get('email'), message: form.get('message'), website: form.get('website') }),
+        body: JSON.stringify({ kind: 'contact', topic: selectedReading?.topic || (selectedReading ? 'Tarot' : 'Allgemeines'), reading: selectedReading?.minutes ? selectedReading.id : undefined, offer: selectedReading && !selectedReading.minutes ? selectedReading.id : undefined, name: form.get('name'), email: form.get('email'), message: form.get('message'), website: form.get('website') }),
       })
       const result = await response.json()
       if (!response.ok) throw new Error(result.error || 'Die Nachricht konnte nicht gesendet werden.')
@@ -80,8 +81,13 @@ export default function Booking() {
         <h2 id="booking-title">Was <em>führt</em><br/>dich hierher?</h2>
         <p className="contact-intro">Ob eine Frage, eine Buchung oder einfach<br/>ein Zeichen – ich freue mich, von dir zu hören.</p>
         <form className="contact-form" onSubmit={submitRequest}>
-          <fieldset disabled={status === 'sending' || status === 'sent'}>
+          {isPreview && <p className="contact-preview" role="note">Diese Website ist eine Vorschau. Anfragen über das Formular sind noch nicht möglich.</p>}
+          <fieldset disabled={isPreview || status === 'sending' || status === 'sent'}>
             <legend className="contact-sr-only">Thema und Nachricht</legend>
+            {selectedReading && <div className="contact-reading">
+              <div><span>Deine unverbindliche Anfrage</span><p>{selectedReading.name} · {selectedReading.minutes && `${selectedReading.minutes} Minuten · `}{selectedReading.from && 'ab '}{selectedReading.price} €</p></div>
+              <button type="button" onClick={onClearReading} aria-label="Ausgewähltes Angebot entfernen">×</button>
+            </div>}
             <div className="contact-message-layout">
               <div className="contact-fields">
                 <div className="contact-identity">
@@ -95,6 +101,7 @@ export default function Booking() {
               <button className="contact-submit" type="submit">{status === 'sending' ? 'Wird gesendet …' : status === 'sent' ? 'Nachricht gesendet' : 'Nachricht senden'}<span aria-hidden="true">⟶</span></button>
             </div>
           </fieldset>
+          <p className="contact-privacy">Informationen zum Umgang mit deinen Angaben findest du unter <a href={`${import.meta.env.BASE_URL}datenschutz/`}>Datenschutz</a>.</p>
           {status === 'error' && <p className="contact-feedback contact-error" role="alert">{error}</p>}
           {status === 'sent' && <p className="contact-feedback" role="status">Deine Nachricht wurde versendet. Ich melde mich per E-Mail bei dir.</p>}
         </form>

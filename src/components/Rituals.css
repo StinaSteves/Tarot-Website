@@ -2,11 +2,27 @@
   position: relative;
   isolation: isolate;
   min-height: max(540px, 39.16vw);
-  padding: clamp(36px, 3.38vw, 110px) 0 clamp(30px, 2.3vw, 75px) 10.1%;
+  padding: clamp(36px, 3.38vw, 110px) 0 calc(clamp(30px, 2.3vw, 75px) + 85px) 10.1%;
   overflow: hidden;
   color: #deddda;
   background: #0c0c0c;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Cover the artwork itself so the deer ends along the wave, not a straight edge. */
+.ritual-bottom-wave {
+  position: absolute;
+  z-index: 4;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 86px;
+  fill: var(--tarot-surface);
+  pointer-events: none;
+}
+
+@media (max-width: 700px) {
+  .ritual-bottom-wave { height: 56px; }
 }
 
 .ritual-dust-particles {
@@ -229,7 +245,7 @@
   .ritual-section {
     min-height: 540px;
     padding-top: 40px;
-    padding-bottom: 36px;
+    padding-bottom: 121px;
   }
 
   .ritual-copy {
@@ -260,7 +276,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .ritual-section {
     min-height: 830px;
     padding: 38px 7% 330px 17%;
@@ -322,178 +338,54 @@
   }
 }
 
-/* The button is the origin of the staggered inventory fan. */
-
-.ritual-inventory {
-  --orbit-unit: clamp(.75px, .07042vw, 2.12px);
-  position: relative;
-  display: inline-block;
-  margin-top: 2.55vw;
-  z-index: 3;
+/* A quiet illustrated index expands in the document flow. */
+.ritual-inventory { position: relative; margin-top: 32px; }
+.ritual-inventory-toggle {
+  display: flex; justify-content: space-between; align-items: center; gap: 24px;
+  width: 100%; min-height: 52px; padding: 14px 0;
+  border: 0; border-top: 1px solid #8c817266; border-bottom: 1px solid #8c817266;
+  background: transparent; color: #ded8ce; cursor: pointer;
+  font: inherit; font-size: 10px; letter-spacing: .16em; text-align: left; text-transform: uppercase;
 }
-
-.ritual-copy .ritual-inventory .ritual-button {
-  position: relative;
-  z-index: 2;
+.ritual-inventory-toggle svg { flex: 0 0 20px; width: 20px; height: 20px; stroke: currentColor; stroke-width: .8; }
+.ritual-toggle-vertical { transform-origin: 12px 12px; transition: transform .25s, opacity .25s; }
+.ritual-inventory.is-open .ritual-toggle-vertical { transform: rotate(90deg); opacity: 0; }
+.ritual-inventory-toggle:hover, .ritual-prices-link:hover { color: #fff; }
+.ritual-inventory :is(button, a):focus-visible { outline: 1px solid #d7c5df; outline-offset: 5px; }
+.ritual-inventory-panel { padding-top: 12px; }
+.ritual-inventory-panel:not([hidden]) { animation: ritual-index-reveal .3s ease-out; }
+.ritual-inventory-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 26px; list-style: none; padding: 0; margin: 0; }
+.ritual-inventory-item { min-width: 0; padding: 16px 0 22px; border-bottom: 1px solid #8c817240; }
+.ritual-inventory-item figure { display: grid; grid-template-columns: 72px minmax(0, 1fr); align-items: center; gap: 12px; margin: 0; }
+.ritual-inventory-item img { display: block; width: 72px; height: 94px; object-fit: contain; filter: saturate(.35); mask-image: radial-gradient(ellipse, #000 42%, #000b 63%, transparent 78%); }
+.ritual-inventory-item figcaption { position: relative; width: 100%; padding-top: 15px; }
+.ritual-item-number { position: absolute; top: 0; left: 0; color: #9b9084; font-size: 8px; letter-spacing: .1em; }
+.ritual-item-name { display: block; color: #ded9d1; font: 400 clamp(25px, 2.1vw, 36px)/1.1 'Bodoni 72', Didot, 'Times New Roman', serif; letter-spacing: -.035em; }
+.ritual-item-description { display: block; margin-top: 8px; color: #b5afa8; font-size: 10px; line-height: 1.6; }
+.ritual-prices-link { display: inline-flex; align-items: center; gap: 20px; min-height: 44px; margin-top: 17px; color: #ded8ce; text-decoration: none; font-size: 9px; letter-spacing: .13em; text-transform: uppercase; }
+.ritual-prices-link span { font-size: 24px; color: #b4a38d; }
+.ritual-copy:has(.ritual-inventory.is-open) { width: 43%; }
+.ritual-section:has(.ritual-inventory.is-open) .ritual-skull-stage { top: auto; bottom: 0; max-height: max(740px, 51vw); }
+@keyframes ritual-index-reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (min-width: 1700px) {
+  .ritual-inventory-toggle { font-size: 12px; }
+  .ritual-inventory-item figure { grid-template-columns: 100px minmax(0, 1fr); gap: 18px; }
+  .ritual-inventory-item img { width: 100px; height: 120px; }
+  .ritual-item-description { font-size: 12px; }
 }
-
-.ritual-inventory.is-open .ritual-button {
-  background: #11100fea;
-  border-color: #b7a88a;
+@media (max-width: 900px) {
+  .ritual-inventory { margin-top: 26px; }
+  .ritual-inventory-toggle { font-size: 9px; letter-spacing: .1em; gap: 12px; }
+  .ritual-inventory-items { gap: 0 18px; }
+  .ritual-copy:has(.ritual-inventory.is-open) { width: 100%; }
+  .ritual-inventory-item figure { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+  .ritual-inventory-item img { width: 95px; height: 100px; }
+  .ritual-inventory-item figcaption { padding-top: 8px; }
+  .ritual-item-number { top: 12px; left: auto; right: 0; }
+  .ritual-item-name { font-size: 30px; }
+  .ritual-item-description { font-size: 10px; }
 }
-
-.ritual-inventory-glow {
-  position: absolute;
-  width: calc(640 * var(--orbit-unit));
-  height: calc(480 * var(--orbit-unit));
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -82%) scale(.65);
-  background: radial-gradient(ellipse, #151211f2 15%, #151211ce 40%, transparent 72%);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity .35s, transform .6s;
-}
-
-.ritual-inventory.is-open .ritual-inventory-glow {
-  opacity: 1;
-  transform: translate(-50%, -82%) scale(1);
-}
-
-.ritual-inventory-items {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.ritual-inventory-item {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc(116 * var(--orbit-unit));
-  opacity: 0;
-  visibility: hidden;
-  transform: translate(-50%, -50%) scale(.12) rotate(-16deg);
-  transition: transform .55s cubic-bezier(.2, .8, .25, 1.15), opacity .22s, visibility 0s .55s;
-  pointer-events: none;
-}
-
-/* Symmetric circular arc, radius approximately 210 units around the button. */
-
-.ritual-inventory-item:nth-child(1) {
-  --fan-x: -190;
-  --fan-y: -89;
-}
-
-.ritual-inventory-item:nth-child(2) {
-  --fan-x: -79;
-  --fan-y: -195;
-}
-
-.ritual-inventory-item:nth-child(3) {
-  --fan-x: 79;
-  --fan-y: -195;
-}
-
-.ritual-inventory-item:nth-child(4) {
-  --fan-x: 190;
-  --fan-y: -89;
-}
-
-.ritual-inventory.is-open .ritual-inventory-item {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translate(calc(-50% + var(--fan-x) * var(--orbit-unit)), calc(-50% + var(--fan-y) * var(--orbit-unit))) scale(1) rotate(0deg);
-  transition-delay: calc(var(--item-index) * 65ms);
-}
-
-.ritual-inventory-item figure {
-  margin: 0;
-  text-align: center;
-  transition: transform .25s;
-}
-
-.ritual-inventory-item:hover figure {
-  transform: translateY(-5px) scale(1.06);
-}
-
-.ritual-inventory-item img {
-  display: block;
-  width: 100%;
-  height: calc(135 * var(--orbit-unit));
-  object-fit: contain;
-  -webkit-mask-image: radial-gradient(ellipse, #000 48%, #000b 66%, transparent 76%);
-  mask-image: radial-gradient(ellipse, #000 48%, #000b 66%, transparent 76%);
-}
-
-.ritual-inventory-item figcaption {
-  margin-top: calc(7 * var(--orbit-unit));
-  color: #e3d9c8;
-  font-size: clamp(10px, .82vw, 25px);
-  letter-spacing: .17em;
-  text-transform: uppercase;
-  text-shadow: 0 2px 8px #000;
-}
-
-.ritual-copy:has(.ritual-inventory.is-open) .ritual-description {
-  opacity: .12;
-}
-
-@media (max-width: 1100px) {
-  .ritual-inventory {
-    --orbit-unit: clamp(.62px, .085vw, .85px);
-    margin-top: 30px;
-  }
-}
-
-@media (max-width: 600px) {
-  .ritual-inventory {
-    --orbit-unit: 1px;
-    margin-top: 25px;
-  }
-
-  .ritual-inventory-item {
-    width: 70px;
-  }
-
-  .ritual-inventory-item img {
-    height: 92px;
-  }
-
-  .ritual-inventory-item:nth-child(1) {
-    --fan-x: -119;
-    --fan-y: -83;
-  }
-
-  .ritual-inventory-item:nth-child(2) {
-    --fan-x: -45;
-    --fan-y: -138;
-  }
-
-  .ritual-inventory-item:nth-child(3) {
-    --fan-x: 45;
-    --fan-y: -138;
-  }
-
-  .ritual-inventory-item:nth-child(4) {
-    --fan-x: 119;
-    --fan-y: -83;
-  }
-
-  .ritual-inventory-glow {
-    width: 380px;
-    height: 350px;
-    transform: translate(-50%, -86%);
-  }
-
-  .ritual-inventory.is-open .ritual-inventory-glow {
-    transform: translate(-50%, -86%);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .ritual-inventory *, .ritual-description {
-    transition: none !important;
-  }
+  .ritual-inventory-panel:not([hidden]) { animation: none; }
+  .ritual-toggle-vertical { transition: none; }
 }

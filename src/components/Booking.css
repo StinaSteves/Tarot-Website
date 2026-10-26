@@ -29,6 +29,10 @@
 .contact-intro { margin-top: clamp(28px, 3.5vw, 55px); font-family: Georgia, 'Times New Roman', serif; font-size: clamp(13px, 1.15vw, 17px); line-height: 1.4; }
 .contact-form { margin-top: clamp(32px, 4vw, 58px); }
 .contact-form fieldset { border: 0; min-width: 0; padding: 0; }
+.contact-reading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 28px; padding: 15px; border: 1px solid #ad9cb3; background: #d9d0dd66; }
+.contact-reading span { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+.contact-reading p { margin-top: 8px; font-size: 14px; line-height: 1.5; }
+.contact-reading button { flex: 0 0 36px; min-height: 36px; border: 0; background: transparent; color: #64526e; font-size: 24px; cursor: pointer; }
 .contact-message-layout { position: relative; }
 .contact-fields { display: flex; flex-direction: column; gap: 40px; }
 .contact-identity { display: grid; grid-template-columns: 1fr 1fr; gap: 9%; }
@@ -45,6 +49,9 @@
 .contact-form fieldset:disabled { opacity: .65; }
 .contact-feedback { max-width: 52ch; margin-top: 20px; font-size: 13px; line-height: 1.7; }
 .contact-error { color: #803e47; }
+.contact-privacy { max-width: 52ch; margin-top: 20px; font-size: 12px; line-height: 1.7; color: #61585f; }
+.contact-privacy a { color: inherit; text-underline-offset: 3px; }
+.contact-privacy a:focus-visible { outline: 1px solid #78667e; outline-offset: 4px; }
 .contact-sr-only, .contact-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .contact-margin { position: absolute; left: calc(89.4% + 14px); top: 8%; pointer-events: none; }
 .contact-margin p { font-size: 7px; letter-spacing: .19em; line-height: 2.7; text-transform: uppercase; }
@@ -73,3 +80,5 @@
   .contact-side-note { position: static; margin-top: 20px; float: right; }
   .contact-submit { gap: 20px; padding: 15px 17px; }
 }
+
+.contact-preview { margin-bottom: 24px; padding: 16px 0; border-block: 1px solid #aaa49b; font-size: 14px; line-height: 1.6; color: #514752; }

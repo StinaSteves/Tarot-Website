@@ -65,3 +65,45 @@ test('all five topics and general enquiries validate; invalid or empty requests 
   for (const topic of ['Liebe', 'Karriere', 'Geld', 'Familie', 'Tarot', 'Allgemeines']) assert.equal(validateBooking({ ...contact, topic }), null)
   for (const patch of [{ topic: 'Invalid' }, { message: '   ' }, { message: 'x'.repeat(2001) }, { email: 'invalid' }, { kind: 'unknown' }]) assert(validateBooking({ ...contact, topic: 'Tarot', ...patch }))
 })
+
+test('selected readings reach email with canonical duration and price and preserve a full message', async t => {
+  const { post, sent } = await api(t)
+  for (const [reading, expected] of [['impuls', 'Impuls – 30 Minuten – 39 EUR'], ['klarheit', 'Klarheit – 60 Minuten – 69 EUR'], ['tiefgang', 'Tiefgang – 90 Minuten – 99 EUR']]) {
+    const message = 'a'.repeat(2000)
+    const response = await post({ kind: 'contact', name: valid.name, email: valid.email, topic: 'Tarot', reading, price: 1, minutes: 1, message })
+    assert.equal(response.status, 200)
+    assert(sent.at(-1).text.includes(expected))
+    assert(sent.at(-1).text.includes(message))
+    assert(sent.at(-1).text.includes('Unverbindliche Anfrage'))
+  }
+})
+
+test('unknown or malformed reading choices never send email', async t => {
+  const { post, sent } = await api(t)
+  for (const reading of ['unknown', null, { id: 'impuls' }]) {
+    const response = await post({ kind: 'contact', name: valid.name, email: valid.email, topic: 'Tarot', reading, message: 'Eine Anfrage.' })
+    assert.equal(response.status, 400)
+  }
+  assert.equal(sent.length, 0)
+})
+
+
+test('ritual and talisman inquiries preserve canonical prices and the starting-price qualifier', async t => {
+  const { post, sent } = await api(t)
+  for (const [offer, expected] of [['ritual-anleitung', 'Dein eigenes Ritual – 49 EUR'], ['ritual-auftrag', 'Ein Ritual für dich – 79 EUR'], ['talisman', 'Dein Talisman – ab 39 EUR']]) {
+    const response = await post({ kind: 'contact', name: valid.name, email: valid.email, topic: offer === 'talisman' ? 'Talismane' : 'Rituale', offer, price: 1, from: false, message: 'Meine persönliche Anfrage.' })
+    assert.equal(response.status, 200)
+    assert(sent.at(-1).text.includes(expected))
+    assert(sent.at(-1).text.includes('Unverbindliche Anfrage'))
+    assert(!sent.at(-1).text.includes('Minuten'))
+  }
+})
+
+test('invalid or ambiguous offer selections are rejected without sending email', async t => {
+  const { post, sent } = await api(t)
+  for (const patch of [{ offer: 'unknown' }, { offer: null }, { offer: { id: 'talisman' } }, { offer: 'talisman', reading: 'impuls' }]) {
+    const response = await post({ kind: 'contact', name: valid.name, email: valid.email, topic: 'Talismane', message: 'Eine Anfrage.', ...patch })
+    assert.equal(response.status, 400)
+  }
+  assert.equal(sent.length, 0)
+})

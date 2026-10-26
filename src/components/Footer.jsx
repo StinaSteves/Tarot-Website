@@ -51,23 +51,16 @@ export default function Footer() {
       </div>
       <nav className="footer-nav" aria-label="Footer-Navigation">
         <a href="#home">Home</a>
-        <button type="button" onClick={() => pending('Über mich')}>Über mich</button>
         <a href="#services">Services</a>
         <a href="#rituale">Rituale</a>
+        <a href="#preise">Preise</a>
         <a href="#termin-buchen">Kontakt</a>
-        <button type="button" onClick={() => pending('FAQ')}>FAQ</button>
       </nav>
-      <div className="footer-newsletter">
-        <h2>Newsletter</h2>
-        <p>Erhalte Inspiration, Mondzyklen und<br className="footer-linebreak"/> neue Ritualanleitungen direkt in dein Postfach.</p>
-        <form onSubmit={event => { event.preventDefault(); setNotice('Der Newsletter startet bald. Deine E-Mail-Adresse wurde noch nicht gespeichert.') }}>
-          <label htmlFor="footer-email" className="footer-sr-only">Deine E-Mail-Adresse für den Newsletter</label>
-          <input id="footer-email" type="email" name="email" autoComplete="email" placeholder="Deine E-Mail" required aria-describedby="newsletter-preview"/>
-          <button type="submit" aria-label="Newsletter-Vorschau"><span aria-hidden="true">⟶</span></button>
-        </form>
-        <span id="newsletter-preview" className="footer-preview">Newsletter startet bald</span>
+      <div className="footer-info">
         <nav className="footer-legal" aria-label="Rechtliche Informationen">
-          {['Datenschutz', 'Impressum', 'AGB'].map(name => <button key={name} type="button" onClick={() => pending(name)}>{name}</button>)}
+          <a href={`${import.meta.env.BASE_URL}datenschutz/`}>Datenschutz</a>
+          <a href={`${import.meta.env.BASE_URL}impressum/`}>Impressum</a>
+          <a href={`${import.meta.env.BASE_URL}agb/`}>AGB</a>
         </nav>
         {notice && <p className="footer-notice" role="status">{notice}</p>}
       </div>

@@ -116,6 +116,9 @@ function Rituals() {
         <path d="M3 9V42M37 14V42" stroke="currentColor" strokeWidth=".65" opacity=".65" />
         <circle cx="37" cy="7" r="1.1" fill="currentColor" />
       </svg>
+      <svg className="ritual-bottom-wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 75C330 15 520 110 900 64S1250 7 1440 26V100H0Z" />
+      </svg>
     </section>
   )
 }

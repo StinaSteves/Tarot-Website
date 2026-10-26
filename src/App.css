@@ -22,6 +22,10 @@ html, body, #root {
   scrollbar-width: none;
 }
 
+html {
+  scroll-padding-top: 72px;
+}
+
 body {
   background-color: rgb(175, 175, 175);
   color: white;
@@ -442,6 +446,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 @media (max-width: 600px) {
+  .nav-container {
+    padding: 0 12px;
+  }
+
+  .nav-menu {
+    gap: clamp(9px, 3vw, 20px);
+  }
+
+  .nav-link {
+    font-size: 0.8125rem;
+    letter-spacing: .05em;
+  }
+
   .hekate-group {
     left: 85%;
   }
@@ -501,6 +518,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 }
